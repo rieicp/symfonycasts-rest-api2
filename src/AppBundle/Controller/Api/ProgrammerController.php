@@ -171,6 +171,8 @@ class ProgrammerController extends BaseController
             'title' => 'There was a validation error',
             'errors' => $errors
         ];
-        return new JsonResponse($data, 400);
+        $response = new JsonResponse($data, 400);
+        $response->headers->set("Content-Type", "application/problem+json");
+        return $response;
     }
 }
