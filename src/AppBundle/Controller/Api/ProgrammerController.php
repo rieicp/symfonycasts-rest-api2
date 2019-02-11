@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Api\ApiProblem;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ProgrammerController extends BaseController
 {
@@ -141,6 +142,22 @@ class ProgrammerController extends BaseController
     private function processForm(Request $request, FormInterface $form)
     {
         $data = json_decode($request->getContent(), true);
+
+       /*
+        * In ProgrammerController , search for json_decode - 
+        * you'll find it in processForm();
+        * if null === $data then we need to return that 400 status code;
+        * So if we return a Response from processForm()
+        * newAction will continue on like normal. The only way we can
+        * break the flow from inside processForm() is by throwing an exception.
+        * But as you're probably thinking, if you throw an exception in Symfony, 
+        * that turns into a 500 error. We need a 400 error.
+        * Solution: Throw an HttpException from HttpKernel. It has 2 
+        * arguments: the status code - 400 - and a message - "Invalid JSON"
+        */
+        if (null === $data) {
+            throw new HttpException(400, 'Invalid JSON!');
+        }
 
         $clearMissing = $request->getMethod() != 'PATCH';
         $form->submit($data, $clearMissing);
