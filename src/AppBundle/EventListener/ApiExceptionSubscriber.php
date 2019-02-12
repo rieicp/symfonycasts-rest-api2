@@ -44,8 +44,13 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
 			}
 		}
 
+		$data = $apiProblem->toArray();
+		if ($data['type'] != 'about:blank') {
+			$data['type'] = 'http://localhost:8000/docs/errors#'.$data['type'];
+		}
+
 		$response = new JsonResponse(
-			$apiProblem->toArray(),
+			$data,
 			$apiProblem->getStatusCode()
 		);
 

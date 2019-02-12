@@ -165,7 +165,7 @@ EOF;
 
         // $this->debugResponse($response);
         $this->assertEquals(400, $response->getStatusCode());
-        $this->asserter()->assertResponsePropertyEquals(
+        $this->asserter()->assertResponsePropertyContains(
             $response,
             'type',
             'invalid_body_format'
