@@ -184,5 +184,6 @@ EOF;
         // Reference: Symfony\Component\HttpFoundation\Response::$statusTexts
         $this->asserter()->assertResponsePropertyEquals($response, 'type', 'about:blank');
         $this->asserter()->assertResponsePropertyEquals($response, 'title', Response::$statusTexts['404']);
+        $this->asserter()->assertResponsePropertyEquals($response, 'detail', 'No programmer found with nickname "fake"');
     }
 }

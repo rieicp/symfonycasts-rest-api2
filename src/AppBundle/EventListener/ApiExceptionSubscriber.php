@@ -22,6 +22,9 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
 			$statusCode = $e instanceof HttpExceptionInterface ?
 							$e->getStatusCode() : 500;
 			$apiProblem = new ApiProblem($statusCode);
+			if ($e instanceof HttpExceptionInterface) {
+				$apiProblem->set('detail', $e->getMessage());
+			}
 		}
 
 		$response = new JsonResponse(
