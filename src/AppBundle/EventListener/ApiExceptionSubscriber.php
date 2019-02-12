@@ -13,15 +13,32 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 class ApiExceptionSubscriber implements EventSubscriberInterface
 {
+	private $debug;
+
+	public function __construct($debug)
+	{
+		$this->debug = $debug;
+	}
+
 	public function onKernelException(GetResponseForExceptionEvent $event)
 	{
 		$e = $event->getException();
+
+		$statusCode = $e instanceof HttpExceptionInterface ?
+						$e->getStatusCode() : 500;
+
+		if ($this->debug && $statusCode >= 500) {
+			return;
+		}
+
 		if ($e instanceof ApiProblemException) {
 			$apiProblem = $e->getApiProblem();
-		}else{
-			$statusCode = $e instanceof HttpExceptionInterface ?
-							$e->getStatusCode() : 500;
+		} else {
 			$apiProblem = new ApiProblem($statusCode);
+
+			// in 'dev' or 'test' environment (debug = true),
+			// in this case, don't use EventSubscriber to handle
+			// but using standard, beautiful 'stacktrace'
 			if ($e instanceof HttpExceptionInterface) {
 				$apiProblem->set('detail', $e->getMessage());
 			}
