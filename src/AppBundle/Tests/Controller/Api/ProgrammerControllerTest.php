@@ -162,7 +162,7 @@ EOF;
             'body' => $invalidJson
         ]);
 
-        $this->debugResponse($response);
+        // $this->debugResponse($response);
         $this->assertEquals(400, $response->getStatusCode());
         $this->asserter()->assertResponsePropertyEquals(
             $response,
