@@ -2,6 +2,7 @@
 namespace AppBundle\Tests\Controller\Api;
 
 use AppBundle\Test\ApiTestCase;
+use Symfony\Component\HttpFoundation\Response;
 
 class ProgrammerControllerTest extends ApiTestCase
 {
@@ -169,5 +170,19 @@ EOF;
             'type',
             'invalid_body_format'
         );
+    }
+
+    public function test404Exception()
+    {
+        $response = $this->client->get('/api/programmers/fake');
+        $this->assertEquals(404, $response->getStatusCode());
+        $this->assertEquals('application/problem+json', $response->getHeader('Content-Type'));
+        // Look back at the Problem Details Spec. Under "Pre-Defined problem
+        // Types", it says that if the status code is enough, you can set
+        // type to about:blank . And we should set title to whatever the
+        // standard text is for that status code. A 404 would be "Not Found".
+        // Reference: Symfony\Component\HttpFoundation\Response::$statusTexts
+        $this->asserter()->assertResponsePropertyEquals($response, 'type', 'about:blank');
+        $this->asserter()->assertResponsePropertyEquals($response, 'title', Response::$statusTexts['404']);
     }
 }
