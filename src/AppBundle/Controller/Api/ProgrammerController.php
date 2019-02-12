@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Api\ApiProblem;
+use AppBundle\Api\ApiProblemException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ProgrammerController extends BaseController
@@ -156,7 +157,14 @@ class ProgrammerController extends BaseController
         * arguments: the status code - 400 - and a message - "Invalid JSON"
         */
         if (null === $data) {
-            throw new HttpException(400, 'Invalid JSON!');
+            $apiProblem = new ApiProblem(
+                400, ApiProblem::TYPE_INVALID_REQUEST_BODY_FORMAT
+            );
+
+            throw new ApiProblemException(
+                $apiProblem,
+                400
+            );
         }
 
         $clearMissing = $request->getMethod() != 'PATCH';
